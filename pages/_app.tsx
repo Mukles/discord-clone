@@ -1,44 +1,36 @@
+import NavLink from "@/Components/NavLink";
 import "@/styles/globals.css";
+import "@/styles/style.css";
 import type { AppProps } from "next/app";
-import Link from "next/link";
-import { useRouter } from "next/router";
+
+let servers = [
+  { id: "1", img: "tailwind.png" },
+  { id: "2", img: "next.png" },
+  { id: "3", img: "mirage.png" },
+];
 
 export default function App({ Component, pageProps }: AppProps) {
-  let router = useRouter();
-
   return (
     <div className="flex h-screen text-gray-100">
       <div className="p-3 space-y-2 overflow-y-scroll bg-gray-900">
-        <Link href="/" className="relative block group">
-          <div className="absolute flex items-center h-full -left-3">
-            <div className="h-10 w-1 transition-all duration-200 origin-left bg-white rounded-r"></div>
-          </div>
-          <div className="">
-            <div
-              className={` ${
-                router.pathname === "/"
-                  ? "rounded-2xl bg-brand text-white"
-                  : "text-gray-100 group-hover:rounded-2xl group-hover:bg-brand group-hover:text-white bg-gray-700 rounded-3xl"
-              } flex items-center justify-center w-12 h-12 transition-all duration-200`}
-            >
-              <DiscordIcon className="h-5 w-7" />
-            </div>
-          </div>
-        </Link>
+        <NavLink href="/">
+          <DiscordIcon className="h-5 w-7" />
+        </NavLink>
 
-        <Link
-          href="/servers/1"
-          className="flex items-center justify-center w-12 h-12 text-gray-100 transition-all duration-200 bg-gray-700 rounded-3xl hover:rounded-2xl hover:bg-brand hover:text-white"
-        >
-          S1
-        </Link>
+        <hr className="border-t-white/[.06] border-t-2 rounded mx-2" />
+
+        {servers.map((server) => (
+          <NavLink href={`/servers/${server.id}`} key={server.id}>
+            <img src={`/servers/${server.img}`} alt="" />
+          </NavLink>
+        ))}
       </div>
       <Component {...pageProps} />
     </div>
   );
 }
 
-function DiscordIcon(props: any) {
+export function DiscordIcon(props: any) {
   return (
     <svg aria-hidden="false" viewBox="0 0 28 20" {...props}>
       <path
