@@ -1,9 +1,31 @@
+import Message from "@/Components/Message";
+import MessageWithUser from "@/Components/MessageWithUser";
+import { IChannel } from "@/types/types";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import data from "../../../../data.json";
+import { useState } from "react";
+import { data } from "../../../../data";
 import * as Icons from "../../.././../Components/icons";
 
 export default function Server() {
+  const router = useRouter();
+  let [closedCategories, setClosedCategories] = useState<Number[]>([]);
+  let server = data[`${router.query.sid}`];
+  let channel = server.categories
+    .map((c) => c.channels)
+    .flat()
+    .find((channel) => +channel.id === +(router.query.cid as any));
+
+  function toggleCategory(categoryId: number) {
+    console.log({ categoryId });
+    setClosedCategories((closedCategories) =>
+      closedCategories.includes(categoryId)
+        ? closedCategories.filter((id) => id !== categoryId)
+        : [...closedCategories, categoryId]
+    );
+  }
+
+  console.log({ channel });
   return (
     <>
       <div className="flex flex-col bg-gray-800 w-60">
@@ -20,32 +42,83 @@ export default function Server() {
           {data["1"].categories.map((category) => (
             <div key={category.id}>
               {category.label && (
-                <button className="flex items-center px-0.5 text-xs uppercase font-title tracking-wide hover:text-gray-100 w-full">
-                  <Icons.Arrow className="w-3 h-3 mr-0.5" />
+                <button
+                  onClick={() => toggleCategory(category.id)}
+                  className="flex items-center px-0.5 text-xs uppercase font-title tracking-wide hover:text-gray-100 w-full"
+                >
+                  <Icons.Arrow
+                    className={`${
+                      closedCategories.includes(category.id) ? "-rotate-90" : ""
+                    } w-3 h-3 mr-0.5 transition duration-200`}
+                  />
                   {category.label}
                 </button>
               )}
 
               <div className="space-y-0.5 mt-[5px]">
-                {category.channels.map((channel) => (
-                  <ChannelLink key={channel.id} channel={channel as any} />
-                ))}
+                {category.channels
+                  .filter((channel) => {
+                    let categoryIsOpen = !closedCategories.includes(
+                      category.id
+                    );
+
+                    return categoryIsOpen || channel.unread;
+                  })
+                  .map((channel) => (
+                    <ChannelLink channel={channel} key={channel.id} />
+                  ))}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 bg-gray-700">
-        <div className="flex items-center h-12 px-3 shadow-sm">general</div>
-        <div className="flex-1 p-3 space-y-4 overflow-y-scroll">
-          {[...Array(40)].map((_, i) => (
-            <p key={i}>
-              Message {i}. Lorem ipsum dolor sit amet consectetur adipisicing
-              elit. Vel saepe laudantium sed reprehenderit incidunt! Hic rem
-              quos reiciendis, fugit quae ratione beatae veniam laborum
-              voluptatem, iusto dolorum, voluptates suscipit quia.
-            </p>
+      <div className="flex flex-col flex-1 flex-shrink min-w-0 bg-gray-700">
+        <div className="flex items-center h-12 px-2 shadow-sm">
+          <div className="flex items-center">
+            <Icons.Hashtag className="w-6 h-6 mx-2 font-semibold text-gray-400" />
+            <span className="mr-2 text-white font-title">{channel?.label}</span>
+          </div>
+
+          {channel?.description && (
+            <>
+              <div className="w-px h-6 mx-2 bg-white/[.06]"></div>
+              <div className="mx-2 text-sm font-medium text-gray-200 truncate">
+                {channel.description}
+              </div>
+            </>
+          )}
+
+          <div className="flex items-center ml-auto">
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.HashtagWithSpeechBubble className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.Bell className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.Pin className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.People className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.Inbox className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.QuestionCircle className="w-6 h-6 mx-2" />
+            </button>
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-scroll">
+          {channel?.messages.map((message, i) => (
+            <div key={i}>
+              {i === 0 || message.user !== channel?.messages[i - 1].user ? (
+                <MessageWithUser {...message} />
+              ) : (
+                <Message {...message} />
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -54,12 +127,7 @@ export default function Server() {
 }
 
 interface Props {
-  channel: {
-    id: number;
-    label: string;
-    icon: string;
-    unread?: boolean;
-  };
+  channel: IChannel;
 }
 
 export const ChannelLink = ({ channel }: Props) => {

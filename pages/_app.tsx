@@ -2,6 +2,7 @@ import NavLink from "@/Components/NavLink";
 import "@/styles/globals.css";
 import "@/styles/style.css";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 
 let servers = [
   { id: "1", img: "tailwind.png" },
@@ -10,6 +11,12 @@ let servers = [
 ];
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter() as any;
+
+  if (!router.isReady) {
+    return null;
+  }
+
   return (
     <div className="flex h-screen text-gray-100">
       <div className="p-3 space-y-2 overflow-y-scroll bg-gray-900">
@@ -20,7 +27,11 @@ export default function App({ Component, pageProps }: AppProps) {
         <hr className="border-t-white/[.06] border-t-2 rounded mx-2" />
 
         {servers.map((server) => (
-          <NavLink href={`/servers/${server.id}`} key={server.id}>
+          <NavLink
+            active={+router.query.sid === +server.id}
+            href={`/servers/${server.id}/channels/1`}
+            key={server.id}
+          >
             <img src={`/servers/${server.img}`} alt="" />
           </NavLink>
         ))}
