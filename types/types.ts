@@ -4,6 +4,7 @@ export interface IChannel {
   icon?: string;
   description?: string;
   unread?: boolean;
+  messages: IMessage[];
 }
 
 export interface IMessage {
