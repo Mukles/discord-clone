@@ -193,7 +193,7 @@ export function QuestionCircle(props: any) {
   );
 }
 
-export function Hourglass(props: any) {
+export function Spyglass(props: any) {
   return (
     <svg viewBox="0 0 24 24" {...props}>
       <path

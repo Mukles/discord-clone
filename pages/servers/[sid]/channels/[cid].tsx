@@ -8,16 +8,15 @@ import { data } from "../../../../data";
 import * as Icons from "../../.././../Components/icons";
 
 export default function Server() {
-  const router = useRouter();
+  const router = useRouter() as any;
   let [closedCategories, setClosedCategories] = useState<Number[]>([]);
-  let server = data[`${router.query.sid}`];
-  let channel = server.categories
+  let server = data.find((server) => +server.id === +router.query.sid);
+  let channel = server?.categories
     .map((c) => c.channels)
     .flat()
-    .find((channel) => +channel.id === +(router.query.cid as any));
+    .find((channel) => +channel.id === +(router.query.cid as any)) as IChannel;
 
   function toggleCategory(categoryId: number) {
-    console.log({ categoryId });
     setClosedCategories((closedCategories) =>
       closedCategories.includes(categoryId)
         ? closedCategories.filter((id) => id !== categoryId)
@@ -25,10 +24,9 @@ export default function Server() {
     );
   }
 
-  console.log({ channel });
   return (
     <>
-      <div className="flex flex-col bg-gray-800 w-60">
+      <div className="flex-col hidden bg-gray-800 md:flex w-60">
         <button className="flex items-center h-12 px-4 font-semibold text-white shadow-sm font-title text-[15px] hover:bg-gray-550/[0.16] transition">
           <div className="relative w-4 h-4 mr-1">
             <Icons.Verified className="absolute w-4 h-4 text-gray-550" />
@@ -39,7 +37,7 @@ export default function Server() {
         </button>
 
         <div className="flex-1 overflow-y-scroll font-medium text-gray-300 pt-3 space-y-[21px]">
-          {data["1"].categories.map((category) => (
+          {server?.categories.map((category) => (
             <div key={category.id}>
               {category.label && (
                 <button
@@ -64,9 +62,9 @@ export default function Server() {
 
                     return categoryIsOpen || channel.unread;
                   })
-                  .map((channel) => (
-                    <ChannelLink channel={channel} key={channel.id} />
-                  ))}
+                  .map((channel) => {
+                    return <ChannelLink channel={channel} key={channel.id} />;
+                  })}
               </div>
             </div>
           ))}
@@ -77,19 +75,32 @@ export default function Server() {
         <div className="flex items-center h-12 px-2 shadow-sm">
           <div className="flex items-center">
             <Icons.Hashtag className="w-6 h-6 mx-2 font-semibold text-gray-400" />
-            <span className="mr-2 text-white font-title">{channel?.label}</span>
+            <span className="mr-2 text-white font-title whitespace-nowrap">
+              {channel?.label}
+            </span>
           </div>
 
           {channel?.description && (
             <>
-              <div className="w-px h-6 mx-2 bg-white/[.06]"></div>
-              <div className="mx-2 text-sm font-medium text-gray-200 truncate">
+              <div className="hidden md:block w-px h-6 mx-2 bg-white/[.06]"></div>
+              <div className="hidden mx-2 text-sm font-medium text-gray-200 truncate md:block">
                 {channel.description}
               </div>
             </>
           )}
 
-          <div className="flex items-center ml-auto">
+          {/* Mobile buttons */}
+          <div className="flex items-center ml-auto md:hidden">
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.HashtagWithSpeechBubble className="w-6 h-6 mx-2" />
+            </button>
+            <button className="text-gray-200 hover:text-gray-100">
+              <Icons.People className="w-6 h-6 mx-2" />
+            </button>
+          </div>
+
+          {/* Desktop buttons */}
+          <div className="items-center hidden ml-auto md:flex">
             <button className="text-gray-200 hover:text-gray-100">
               <Icons.HashtagWithSpeechBubble className="w-6 h-6 mx-2" />
             </button>
@@ -102,6 +113,16 @@ export default function Server() {
             <button className="text-gray-200 hover:text-gray-100">
               <Icons.People className="w-6 h-6 mx-2" />
             </button>
+            <div className="relative mx-2">
+              <input
+                type="text"
+                placeholder="Search"
+                className="h-6 px-1.5 text-sm font-medium placeholder-gray-400 bg-gray-900 border-none rounded w-36"
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center">
+                <Icons.Spyglass className="w-4 h-4 mr-1.5 text-gray-400" />
+              </div>
+            </div>
             <button className="text-gray-200 hover:text-gray-100">
               <Icons.Inbox className="w-6 h-6 mx-2" />
             </button>
@@ -110,6 +131,7 @@ export default function Server() {
             </button>
           </div>
         </div>
+
         <div className="flex-1 overflow-y-scroll">
           {channel?.messages.map((message, i) => (
             <div key={i}>
@@ -127,7 +149,7 @@ export default function Server() {
 }
 
 interface Props {
-  channel: IChannel;
+  channel: any;
 }
 
 export const ChannelLink = ({ channel }: Props) => {

@@ -2,42 +2,50 @@ import NavLink from "@/Components/NavLink";
 import "@/styles/globals.css";
 import "@/styles/style.css";
 import type { AppProps } from "next/app";
+import Head from "next/head";
 import { useRouter } from "next/router";
-
-let servers = [
-  { id: "1", img: "tailwind.png" },
-  { id: "2", img: "next.png" },
-  { id: "3", img: "mirage.png" },
-];
+import { useEffect, useState } from "react";
+import { data } from "../data";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter() as any;
 
-  if (!router.isReady) {
+  let [isFirstRender, setIsFirstRender] = useState(true);
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
+
+  if (!router.isReady || isFirstRender) {
     return null;
   }
 
   return (
-    <div className="flex h-screen text-gray-100">
-      <div className="p-3 space-y-2 overflow-y-scroll bg-gray-900">
-        <NavLink href="/">
-          <DiscordIcon className="h-5 w-7" />
-        </NavLink>
-
-        <hr className="border-t-white/[.06] border-t-2 rounded mx-2" />
-
-        {servers.map((server) => (
-          <NavLink
-            active={+router.query.sid === +server.id}
-            href={`/servers/${server.id}/channels/1`}
-            key={server.id}
-          >
-            <img src={`/servers/${server.img}`} alt="" />
+    <>
+      <Head>
+        <title>Discord Clone</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div className="flex h-screen text-gray-100">
+        <div className="p-3 space-y-2 overflow-y-scroll bg-gray-900">
+          <NavLink href="/">
+            <DiscordIcon className="h-5 w-7" />
           </NavLink>
-        ))}
+
+          <hr className="border-t-white/[.06] border-t-2 rounded mx-2" />
+
+          {data.map((server) => (
+            <NavLink
+              href={`/servers/${server.id}/channels/${server.categories[0].channels[0].id}`}
+              active={+router.query.sid === +server.id}
+              key={server.id}
+            >
+              <img src={`/servers/${server.img}`} alt="" />
+            </NavLink>
+          ))}
+        </div>
+        <Component {...pageProps} />
       </div>
-      <Component {...pageProps} />
-    </div>
+    </>
   );
 }
 

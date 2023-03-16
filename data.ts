@@ -1,11 +1,12 @@
 import { faker } from "@faker-js/faker";
-import { IServer } from "./types/types";
 
 faker.seed(123);
 
-export const data: IServer = {
-  1: {
+export const data = [
+  {
+    id: 1,
     label: "Tailwind CSS",
+    img: "tailwind.png",
     categories: [
       {
         id: 1,
@@ -147,8 +148,10 @@ export const data: IServer = {
       },
     ],
   },
-  2: {
+  {
+    id: 2,
     label: "Next.js",
+    img: "next.png",
     categories: [
       {
         id: 6,
@@ -248,8 +251,10 @@ export const data: IServer = {
       },
     ],
   },
-  3: {
+  {
+    id: 3,
     label: "Mirage JS",
+    img: "mirage.png",
     categories: [
       {
         id: 9,
@@ -267,9 +272,9 @@ export const data: IServer = {
       },
     ],
   },
-};
+];
 
-function getRandomInt(min, max) {
+function getRandomInt(min: any, max: any) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive

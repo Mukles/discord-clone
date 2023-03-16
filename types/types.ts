@@ -1,9 +1,8 @@
 export interface IChannel {
   id: number;
-  description?: string;
-  messages: Array<IMessage>;
   label: string;
   icon?: string;
+  description?: string;
   unread?: boolean;
 }
 
@@ -21,8 +20,8 @@ export interface ICategory {
 }
 
 export interface IServer {
-  [key: string]: {
-    label: string;
-    categories: ICategory[];
-  };
+  id: number;
+  label: string;
+  img: string;
+  categories: ICategory[];
 }
