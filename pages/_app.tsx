@@ -1,4 +1,4 @@
-import NavLink from "@/Components/NavLink";
+import NavLink from "@/components/NavLink";
 import "@/styles/globals.css";
 import "@/styles/style.css";
 import type { AppProps } from "next/app";
