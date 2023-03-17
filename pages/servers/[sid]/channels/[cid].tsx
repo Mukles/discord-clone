@@ -1,10 +1,10 @@
-import Message from "@/components/Message";
-import MessageWithUser from "@/components/MessageWithUser";
 import { IChannel } from "@/types/types";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import * as Icons from "../../../../components/icons";
+import Message from "../../../../components/Message";
+import MessageWithUser from "../../../../components/MessageWithUser";
 import { data } from "../../../../data";
 
 export default function Server() {

@@ -1,10 +1,10 @@
-import NavLink from "@/components/NavLink";
 import "@/styles/globals.css";
 import "@/styles/style.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import NavLink from "../components/NavLink";
 import { data } from "../data";
 
 export default function App({ Component, pageProps }: AppProps) {
